@@ -3,232 +3,168 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MISSION: LAST SIGNAL — Technicus</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LAST SIGNAL - Brug</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#10151e;color:#edf3fc;font-family:Arial,sans-serif}
-header{padding:18px;background:#202b3b;border-bottom:1px solid #43546a}
-h1{margin:0;font-size:22px;letter-spacing:2px}
-.sub{font-size:12px;color:#a9bdd5;margin-top:6px}
-main{max-width:950px;margin:auto;padding:15px}
-.panel{background:#1b2737;border:1px solid #40536a;border-radius:12px;padding:15px;margin-bottom:14px}
-h2{font-size:18px;margin:0 0 12px}
-h3{font-size:16px;margin:0 0 9px}
-p{line-height:1.5}
-.muted{color:#a9bdd5;font-size:13px}
+body{margin:0;background:#081321;color:#e9f2ff;font-family:Arial,sans-serif}
+header{padding:20px;background:#12243a;border-bottom:1px solid #34516e}
+h1{font-size:22px;margin:0;letter-spacing:2px}
+main{max-width:1000px;margin:auto;padding:16px}
+.panel{background:#12243a;border:1px solid #304c68;border-radius:12px;padding:16px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 12px}
+h3{font-size:15px}
+.muted{color:#9eb5ce;font-size:13px;line-height:1.5}
 input,button{font:inherit}
-input{width:100%;padding:12px;margin:6px 0;background:#101a28;color:white;border:1px solid #526b86;border-radius:8px}
-button{padding:11px 14px;background:#28577e;border:1px solid #5a86ac;color:white;border-radius:8px;cursor:pointer}
-button:hover{background:#3473a4}
-.primary{background:#087d70;border-color:#2ab9a5}
-.task{background:#111d2c;border:1px solid #435d78;border-radius:10px;padding:14px;margin:12px 0}
-.step{background:#1d3045;padding:10px;border-radius:8px;margin:8px 0}
-.formula{font-family:monospace;font-size:15px;color:#ffe08a;background:#0b1623;padding:12px;border-radius:8px;overflow-wrap:anywhere}
-.answer{font-size:17px;color:#6ee5ae;font-weight:bold}
-.tag{display:inline-block;padding:5px 8px;border-radius:20px;background:#293f58;color:#bdd3e8;font-size:11px}
-.warning{border-left:4px solid #e2a63b;padding:10px;background:#2b291f;color:#ffe0a2}
-.good{color:#6ee5ae}
-.symbols{font-size:25px;letter-spacing:8px}
-#manual{display:none}
-#manualTasks{margin-top:12px}
-ol{padding-left:22px;line-height:1.7}
-footer{text-align:center;color:#8298b1;padding:20px;font-size:11px}
+input{width:100%;padding:12px;background:#091727;color:white;border:1px solid #47617c;border-radius:8px;margin:8px 0}
+button{padding:11px 14px;background:#234d70;color:white;border:1px solid #527a9c;border-radius:8px;cursor:pointer}
+button:disabled{opacity:.4}
+.primary{background:#087c70}
+.danger{background:#822b38}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.stat{background:#091827;padding:13px;text-align:center;border-radius:9px}
+.stat strong{display:block;font-size:26px;margin-top:7px}
+.red{color:#ff6666}
+.green{color:#61e3a5}
+.task{background:#0a192a;border:1px solid #3b5875;border-radius:10px;padding:14px;margin:12px 0}
+.task.done{border-color:#32ae7c}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.symbol{font-size:25px;min-width:55px}
+.wire{width:60px;height:18px;padding:0}
+.color{width:48px;height:48px;border:2px solid #ffffff66}
+.redc{background:#d83c4b}.bluec{background:#3479e5}.greenc{background:#26a66a}.yellowc{background:#e5b52d}
+.switch{min-width:75px}
+.switch.on{background:#176b4e}
+.tag{font-size:11px;background:#1b3550;padding:6px 9px;border-radius:20px;color:#b9d2eb}
+.dial{text-align:center;font-size:22px;padding:12px}
+#game{display:none}
+#log{font-size:12px;color:#a9bfd4;max-height:130px;overflow:auto}
+@media(max-width:550px){.stats{grid-template-columns:1fr 1fr}.stat:last-child{grid-column:span 2}}
 </style>
 </head>
 <body>
 <header>
-<h1>🛠️ MISSION: LAST SIGNAL</h1>
-<div class="sub">TECHNISCHE HANDLEIDING // TECHNICUSINTERFACE // TERMINAL 02</div>
+<h1>🚀 MISSION: LAST SIGNAL</h1>
+<div class="muted">BRUGCONSOLE // UITVOERDER</div>
 </header>
 <main>
 <section class="panel" id="start">
-<h2>🔐 Missieverbinding</h2>
-<p class="muted">Voer exact dezelfde missiecode in als op de brugconsole.</p>
-<input id="missionCode" placeholder="Bijvoorbeeld: ORION-742">
-<button class="primary" onclick="startMission()">OPEN TECHNISCHE HANDLEIDING</button>
-<p class="muted" id="error"></p>
+<h2>🔐 Missie starten</h2>
+<p class="muted">Voer dezelfde missiecode in als de technicus.</p>
+<input id="code" placeholder="Bijvoorbeeld ORION-742">
+<button class="primary" onclick="start()">START MISSIE</button>
+<p id="error" class="muted"></p>
 </section>
 
-<section id="manual">
+<section id="game">
 <div class="panel">
-<h2>📖 MISSIEDOSSIER: DE LAATSTE VERBINDING</h2>
-<p id="story"></p>
-<p class="warning">BELANGRIJK: de uitvoerder kan deze handleiding niet zien. Jij bent verantwoordelijk voor het berekenen van de juiste handelingen. Geef steeds één duidelijke opdracht tegelijk door.</p>
+<h2>🛰️ Schipstatus</h2>
+<div class="stats">
+<div class="stat">👨‍🚀 Bemanning<strong id="crew">?</strong></div>
+<div class="stat">🔴 Alarmlichten<strong id="alarms" class="red">?</strong></div>
+<div class="stat">❌ Fouten<strong id="strikes">0 / 3</strong></div>
+</div>
+<p id="status" class="green">● SYSTEMEN ACTIEF</p>
+<p>⏱️ <strong id="timer">20:00</strong></p>
 </div>
 
 <div class="panel">
-<h2>📡 STAP 1 — VRAAG DE BRUG OM INFORMATIE</h2>
-<p>Vraag de uitvoerder om de volgende twee gegevens. Deze staan uitsluitend op het uitvoerdersscherm.</p>
-<label>👨‍🚀 Aantal bemanningsleden</label>
-<input id="crewInput" type="number" min="1" max="20" placeholder="Vraag dit aan de uitvoerder">
-<label>🔴 Aantal rode alarmlichten</label>
-<input id="alarmInput" type="number" min="0" max="20" placeholder="Vraag dit aan de uitvoerder">
-<button class="primary" onclick="unlockManual()">BEREKEN MISSIEGEGEVENS</button>
-<p class="muted" id="dataError"></p>
-</div>
-
-<div id="instructions" style="display:none">
-<div class="panel">
-<h2>🧮 MISSIEGEGEVENS</h2>
-<p id="missionNumbers"></p>
-<p class="muted">Gebruik deze waarden bij alle opdrachten. Geef de uitvoerder niet alleen een antwoord, maar vertel precies welke knop, kabel of schakelaar nodig is.</p>
+<h2>📡 Huidige situatie</h2>
+<p id="story" class="muted"></p>
 </div>
 
 <div class="panel">
-<h2>🧭 WERKWIJZE</h2>
-<ol>
-<li>Lees de opdracht volledig door.</li>
-<li>Vraag de uitvoerder om de zichtbare informatie die je nodig hebt.</li>
-<li>Bereken het antwoord met de weergegeven formule.</li>
-<li>Vertel de uitvoerder exact welke handeling moet worden uitgevoerd.</li>
-<li>Wacht op bevestiging dat het systeem hersteld is.</li>
-<li>Ga daarna pas door naar de volgende opdracht.</li>
-</ol>
-<p class="warning">Je hebt samen maximaal twee fouten. Bij de derde foute handeling mislukt de missie direct. De technicus bedient zelf geen onderdelen.</p>
+<h2>🧩 Bedieningspanelen</h2>
+<p class="muted">Wacht op de instructies van de technicus. Voer alleen de gevraagde handelingen uit.</p>
+<div id="tasks"></div>
 </div>
 
 <div class="panel">
-<div class="tag" id="missionTag"></div>
-<h2>🧩 OPDRACHTENHANDLEIDING</h2>
-<div id="manualTasks"></div>
-</div>
+<h2>📋 Gebeurtenissen</h2>
+<div id="log">Console online.</div>
 </div>
 </section>
 </main>
-<footer>LAST SIGNAL // TECHNISCHE HANDLEIDING // OFFLINE</footer>
-
 <script>
 const $=id=>document.getElementById(id);
-let rngSeed=1,mission=null,crew=0,alarms=0;
-function rand(){rngSeed=(rngSeed*1664525+1013904223)>>>0;return rngSeed/4294967296}
-function int(n){return Math.floor(rand()*n)}
-function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=int(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
-function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
-function pick(a){return a[int(a.length)]}
-function makeTask(t){
- if(t==='wires')return {colors:shuffle(['rood','blauw','geel','groen','wit','paars']),offset:int(6)};
- if(t==='symbols')return {symbols:shuffle(['☼','◆','✚','Ω','△','⌘','◉','✦']),offset:int(8)};
- if(t==='colors')return {seq:Array.from({length:4+int(2)},()=>int(4))};
- if(t==='switches')return {bits:Array.from({length:5},()=>int(2)),flip:int(5)};
- if(t==='keypad')return {nums:Array.from({length:4},()=>1+int(9)),offset:int(9)};
- if(t==='dial')return {start:int(8),offset:int(8)};
- if(t==='valves')return {order:shuffle(['A','B','C','D']),offset:int(4)};
- if(t==='circuit')return {paths:shuffle(['A','B','C','D']),offset:int(4)};
+let seed=1,crew=0,alarms=0,types=[],data={},strikes=0,solved=0,time=1200,ended=false,clock;
+function random(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+function n(max){return Math.floor(random()*max)}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){let j=n(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
+function hash(s){let h=2166136261;for(let c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0}
+function start(){
+ let code=$('code').value.trim().toUpperCase();
+ if(code.length<3){$('error').textContent='Gebruik minimaal drie tekens.';return}
+ seed=hash(code);crew=4+n(7);alarms=2+n(6);
+ types=shuffle(['wires','symbols','colors','switches','keypad','dial','valves','circuit']).slice(0,7);
+ data={};
+ types.forEach(t=>data[t]=generate(t));
+ $('start').style.display='none';$('game').style.display='block';
+ $('crew').textContent=crew;$('alarms').textContent=alarms;
+ $('story').textContent='De '+['Astra-9','Odyssey','Helios','Orion','Vega'][n(5)]+' ontvangt een onbekend noodsignaal. De hoofdcomputer meldt meerdere storingen. De bemanning probeert de noodstroom actief te houden. De technicus moet vanaf de onderhoudsterminal de systemen analyseren. Jij staat bij de brugconsole en voert de herstelhandelingen uit.';
+ render();
+ log('Missie gestart: '+code);
+ clock=setInterval(tick,1000);
 }
-const names={wires:'⚡ KABELVERDELER',symbols:'🔣 SYMBOOLSCANNER',colors:'🎨 KLEURGEHEUGEN',switches:'🎚️ SCHAKELPANEEL',keypad:'🔢 TOEGANGSCODE',dial:'🧭 NAVIGATIESCHIJF',valves:'🫧 ZUURSTOFKLEPPEN',circuit:'🔌 STROOMROUTE'};
-const colorNames=['ROOD','BLAUW','GROEN','GEEL'];
-function startMission(){
- const code=$('missionCode').value.trim().toUpperCase();
- if(code.length<3){$('error').textContent='Gebruik minimaal 3 tekens.';return}
- rngSeed=hash(code);
- crew=4+int(7);alarms=2+int(6);
- const types=shuffle(['wires','symbols','colors','switches','keypad','dial','valves','circuit']).slice(0,6);
- mission={code,types,data:{}};
- types.forEach(t=>mission.data[t]=makeTask(t));
- $('start').style.display='none';$('manual').style.display='block';
- $('missionTag').textContent='MISSIECODE: '+code+' // '+types.length+' OPDRACHTEN';
- const ship=pick(['Astra-9','Odyssey','Helios','Orion','Vega']);
- $('story').textContent='Het is nu '+ship+'. De bemanning ontvangt een onbekend noodsignaal. De hoofdcomputer valt gedeeltelijk uit en de communicatie hapert. De bemanning probeert de noodsystemen actief te houden. Er zijn meerdere storingen tegelijk ontstaan. Jij bent de enige technicus die nog toegang heeft tot de technische protocollen. De uitvoerder staat bij de brugconsole en kan de fysieke bedieningen uitvoeren. Jij moet de systemen stap voor stap helpen herstellen.';
+function generate(t){
+ if(t==='wires')return {colors:shuffle(['rood','blauw','geel','groen','wit','paars']),offset:n(12)};
+ if(t==='symbols')return {symbols:shuffle(['☼','◆','✚','Ω','△','⌘','◉','✦']),offset:n(12)};
+ if(t==='colors')return {seq:Array.from({length:5},()=>n(4))};
+ if(t==='switches')return {bits:Array.from({length:5},()=>n(2)),offset:n(12)};
+ if(t==='keypad')return {nums:Array.from({length:4},()=>1+n(9)),offset:n(12)};
+ if(t==='dial')return {start:n(8),offset:n(12)};
+ if(t==='valves')return {order:shuffle(['A','B','C','D']),offset:n(12)};
+ if(t==='circuit')return {paths:shuffle(['A','B','C','D']),offset:n(12)};
 }
-function unlockManual(){
- const c=Number($('crewInput').value),a=Number($('alarmInput').value);
- if(!Number.isInteger(c)||!Number.isInteger(a)||c<1||c>20||a<0||a>20){$('dataError').textContent='Vul het aantal bemanningsleden en alarmlichten correct in.';return}
- if(c!==crew||a!==alarms){$('dataError').textContent='Deze gegevens komen niet overeen met de missiecode. Vraag de uitvoerder de waarden opnieuw voor te lezen.';return}
- crew=c;alarms=a;
- $('dataError').textContent='';
- $('instructions').style.display='block';
- $('missionNumbers').innerHTML='Bemanning: <b>'+crew+'</b> &nbsp; | &nbsp; Rode alarmlichten: <b>'+alarms+'</b> &nbsp; | &nbsp; Som: <b>'+(crew+alarms)+'</b>';
- renderManual();
-}
-function answer(t,d){
- if(t==='wires')return (crew+alarms+d.offset)%6;
- if(t==='symbols')return (crew+alarms+d.offset)%8;
+function answers(t,d){
+ let sum=crew+alarms;
+ if(t==='wires')return (sum+d.offset)%6;
+ if(t==='symbols')return (sum+d.offset)%8;
  if(t==='colors')return d.seq;
- if(t==='switches')return d.bits.map((b,i)=>b^((crew+alarms+d.flip+i)%2));
- if(t==='keypad')return d.nums.map((n,i)=>(n+crew+alarms+d.offset+i)%10).join('');
- if(t==='dial')return (d.start+crew+alarms+d.offset)%8;
- if(t==='valves')return d.order.map((_,i)=>d.order[(i+(crew+alarms+d.offset)%4)%4]);
- if(t==='circuit')return d.paths[(crew+alarms+d.offset)%4];
+ if(t==='switches')return d.bits.map((v,i)=>v^((sum+d.offset+i)%2));
+ if(t==='keypad')return d.nums.map((v,i)=>(v+sum+d.offset+i)%10).join('');
+ if(t==='dial')return (d.start+sum+d.offset)%8;
+ if(t==='valves'){let shift=(sum+d.offset)%4;return d.order.map((v,i)=>d.order[(i+shift)%4])}
+ if(t==='circuit')return d.paths[(sum+d.offset)%4];
 }
-function taskCard(t,i){
- const d=mission.data[t],a=answer(t,d);
- let s='<section class="task"><div class="tag">OPDRACHT '+(i+1)+'</div><h3>'+names[t]+'</h3>';
- if(t==='wires'){
-  s+='<p><b>Wat zie je?</b> De uitvoerder ziet zes gekleurde kabels. Vraag hem om de kleuren van positie 1 tot en met 6 voor te lezen.</p>';
-  s+='<p><b>Gegevens in jouw handleiding:</b> correctiegetal = '+d.offset+'.</p>';
-  s+='<div class="formula">Positie = (bemanning + rode alarmlichten + correctiegetal) modulo 6</div>';
-  s+='<div class="step">Berekening: ('+crew+' + '+alarms+' + '+d.offset+') modulo 6 = <b>'+(a+1)+'</b>.</div>';
-  s+='<p><b>Geef deze instructie:</b> “Zoek kabel nummer '+(a+1)+' op. Controleer de kleur die je op die positie ziet. Knip uitsluitend die kabel door.”</p>';
-  s+='<p class="muted">Let op: de positie telt vanaf links, beginnend bij 1.</p>';
- }
- if(t==='symbols'){
-  s+='<p><b>Wat zie je?</b> De uitvoerder ziet acht symbolen. Vraag hem om de symbolen van links naar rechts op te lezen.</p>';
-  s+='<p><b>Correctiegetal:</b> '+d.offset+'.</p>';
-  s+='<div class="formula">Positie = (bemanning + rode alarmlichten + correctiegetal) modulo 8</div>';
-  s+='<div class="step">Berekening: ('+crew+' + '+alarms+' + '+d.offset+') modulo 8 = <b>'+(a+1)+'</b>.</div>';
-  s+='<p><b>Juiste positie:</b> '+(a+1)+'.</p>';
-  s+='<p><b>Geef deze instructie:</b> “Druk op het symbool op positie '+(a+1)+'. Tel van links naar rechts.”</p>';
-  s+='<p class="symbols">'+d.symbols.map((x,i)=>(i+1)+': '+x).join(' &nbsp; ')+'</p>';
- }
- if(t==='colors'){
-  s+='<p><b>Wat zie je?</b> Een kleurpaneel met vier knoppen. De handleiding bevat de geheime reeks.</p>';
-  s+='<div class="step">De volgorde is:</div><div class="symbols">'+a.map(x=>colorNames[x]).join(' → ')+'</div>';
-  s+='<p><b>Geef deze instructie:</b> “Druk achter elkaar op '+a.map(x=>colorNames[x]).join(', daarna ') +'. Wacht na iedere druk kort. Begin opnieuw als de console een fout aangeeft.”</p>';
-  s+='<p class="muted">Deze reeks is specifiek voor deze missiecode. De volgorde verandert bij een andere missiecode.</p>';
- }
- if(t==='switches'){
-  s+='<p><b>Wat zie je?</b> Vijf schakelaars, S1 tot en met S5. De uitvoerder kan ze afzonderlijk aan- en uitzetten.</p>';
-  s+='<p><b>Startwaarden uit de handleiding:</b> '+d.bits.map((b,i)=>'S'+(i+1)+'='+b).join(' · ')+'</p>';
-  s+='<p><b>Correctiegetal:</b> '+d.flip+'.</p>';
-  s+='<div class="formula">Per schakelaar: doelstand = startwaarde XOR ((bemanning + alarmlichten + correctiegetal + positie) modulo 2). Posities beginnen bij 0.</div>';
-  s+='<div class="step">Berekening:</div>';
-  a.forEach((v,i)=>{s+='<p>S'+(i+1)+': '+d.bits[i]+' XOR (('+crew+' + '+alarms+' + '+d.flip+' + '+i+') modulo 2) = <b>'+(v?'AAN':'UIT')+'</b></p>'});
-  s+='<p class="answer">Juiste standen: '+a.map((v,i)=>'S'+(i+1)+' '+(v?'AAN':'UIT')).join(' · ')+'</p>';
-  s+='<p><b>Geef deze instructie:</b> “Zet S1 tot en met S5 precies op de hierboven berekende standen. Controleer alle vijf schakelaars en druk daarna op BEVESTIG STANDEN.”</p>';
- }
- if(t==='keypad'){
-  s+='<p><b>Wat zie je?</b> Een numeriek toetsenbord en een display met vier lege posities.</p>';
-  s+='<p><b>Basisgetallen:</b> '+d.nums.join(' · ')+' &nbsp; <b>Correctiegetal:</b> '+d.offset+'</p>';
-  s+='<div class="formula">Cijfer = (basisgetal + bemanning + rode alarmlichten + correctiegetal + positie) modulo 10. Posities beginnen bij 0.</div>';
-  s+='<div class="step">Berekening per cijfer:</div>';
-  a.split('').forEach((v,i)=>{s+='<p>Cijfer '+(i+1)+': ('+d.nums[i]+' + '+crew+' + '+alarms+' + '+d.offset+' + '+i+') modulo 10 = <b>'+v+'</b></p>'});
-  s+='<p class="answer">TOEGANGSCODE: '+a+'</p>';
-  s+='<p><b>Geef deze instructie:</b> “Voer de cijfers '+a.split('').join(' - ')+' achter elkaar in en druk daarna op ENTER.”</p>';
- }
- if(t==='dial'){
-  const dirs=['N','NO','O','ZO','Z','ZW','W','NW'];
-  s+='<p><b>Wat zie je?</b> Een navigatieschijf met acht richtingen.</p>';
-  s+='<p>Startpositie: <b>'+dirs[d.start]+'</b>. Correctiegetal: <b>'+d.offset+'</b>.</p>';
-  s+='<div class="formula">Doelpositie = (startpositie + bemanning + rode alarmlichten + correctiegetal) modulo 8</div>';
-  s+='<div class="step">Berekening: ('+d.start+' + '+crew+' + '+alarms+' + '+d.offset+') modulo 8 = <b>'+a+'</b>.</div>';
-  s+='<p class="answer">DOELRICHTING: '+dirs[a]+'</p>';
-  s+='<p><b>Geef deze instructie:</b> “Draai de navigatieschijf naar '+dirs[a]+'. Selecteer die richting op het paneel.”</p>';
- }
- if(t==='valves'){
-  const shift=(crew+alarms+d.offset)%4;
-  s+='<p><b>Wat zie je?</b> Vier zuurstofkleppen: A, B, C en D. De volgorde in de handleiding is de basisvolgorde.</p>';
-  s+='<p>Basisvolgorde: <b>'+d.order.join(' → ')+'</b>. Correctiegetal: <b>'+d.offset+'</b>.</p>';
-  s+='<div class="formula">Verschuiving = (bemanning + rode alarmlichten + correctiegetal) modulo 4. Begin bij het eerste element van de basisvolgorde en schuif de reeks zoveel plaatsen naar links.</div>';
-  s+='<div class="step">Berekening: ('+crew+' + '+alarms+' + '+d.offset+') modulo 4 = <b>'+shift+'</b>.</div>';
-  s+='<p class="answer">JUISTE VOLGORDE: '+a.join(' → ')+'</p>';
-  s+='<p><b>Geef deze instructie:</b> “Open klep '+a.join(', daarna klep ')+' in precies deze volgorde. Sla geen klep over.”</p>';
- }
- if(t==='circuit'){
-  s+='<p><b>Wat zie je?</b> Vier mogelijke stroomroutes: A, B, C en D.</p>';
-  s+='<p>Routevolgorde uit de handleiding: <b>'+d.paths.join(' → ')+'</b>. Correctiegetal: <b>'+d.offset+'</b>.</p>';
-  s+='<div class="formula">Positie = (bemanning + rode alarmlichten + correctiegetal) modulo 4</div>';
-  s+='<div class="step">Berekening: ('+crew+' + '+alarms+' + '+d.offset+') modulo 4 = <b>'+(a+1)+'</b>.</div>';
-  s+='<p class="answer">JUISTE ROUTE: '+a+'</p>';
-  s+='<p><b>Geef deze instructie:</b> “Selecteer stroomroute '+a+'. Controleer dat je route '+a+' kiest en niet de positie ervoor.”</p>';
- }
- s+='<div class="step"><b>Na de handeling:</b> vraag de uitvoerder of de opdracht groen als hersteld wordt weergegeven. Pas daarna ga je verder.</div>';
- s+='</section>';
- return s;
+const names={wires:'⚡ Kabelverdeler',symbols:'🔣 Symboolscanner',colors:'🎨 Kleurgeheugen',switches:'🎚️ Schakelpaneel',keypad:'🔢 Toegangscode',dial:'🧭 Navigatieschijf',valves:'🫧 Zuurstofkleppen',circuit:'🔌 Stroomroute'};
+const colors=['ROOD','BLAUW','GROEN','GEEL'];
+const classes=['redc','bluec','greenc','yellowc'];
+function render(){
+ $('tasks').innerHTML='';
+ types.forEach((t,i)=>{
+ let d=data[t],html='<div class="task" id="task-'+t+'"><h3>'+(i+1)+'. '+names[t]+'</h3><span class="tag" id="tag-'+t+'">WACHT OP INSTRUCTIE</span>';
+ if(t==='wires')html+='<p class="muted">Zes kabels. Selecteer de juiste kabel volgens de instructies.</p><div class="row">'+d.colors.map((c,i)=>`<button class="wire" style="background:${({rood:'#d83c4b',blauw:'#3479e5',geel:'#e5b52d',groen:'#26a66a',wit:'#e8edf2',paars:'#9855c9'})[c]}" title="${i+1}: ${c}" onclick="choose('${t}',${i})"></button>`).join('')+'</div><p class="muted">'+d.colors.map((c,i)=>(i+1)+': '+c).join(' · ')+'</p>';
+ if(t==='symbols')html+='<p class="muted">Selecteer het juiste symbool.</p><div class="row">'+d.symbols.map((s,i)=>`<button class="symbol" onclick="choose('${t}',${i})">${s}</button>`).join('')+'</div><p class="muted">'+d.symbols.map((s,i)=>(i+1)+': '+s).join(' · ')+'</p>';
+ if(t==='colors')html+='<p class="muted">Herhaal de kleurreeks.</p><p id="colorProgress">0 / '+d.seq.length+'</p><div class="row">'+classes.map((c,i)=>`<button class="color ${c}" onclick="colorPress(${i})"></button>`).join('')+'</div>';
+ if(t==='switches')html+='<p class="muted">Stel de vijf schakelaars in.</p><div class="row">'+d.bits.map((v,i)=>`<button class="switch" id="sw${i}" onclick="toggle(${i})">S${i+1}: UIT</button>`).join('')+'</div><button onclick="checkSwitches()">BEVESTIG</button>';
+ if(t==='keypad')html+='<p class="muted">Voer de viercijferige code in.</p><div class="row">'+[1,2,3,4,5,6,7,8,9,0].map(v=>`<button onclick="keyAdd('${v}')">${v}</button>`).join('')+'<button class="danger" onclick="keyClear()">WIS</button><button class="primary" onclick="keySubmit()">ENTER</button></div><p class="dial" id="display">_ _ _ _</p>';
+ if(t==='dial')html+='<p class="muted">Kies de juiste richting.</p><div class="row">'+['N','NO','O','ZO','Z','ZW','W','NW'].map((v,i)=>`<button onclick="choose('${t}',${i})">${v}</button>`).join('')+'</div>';
+ if(t==='valves')html+='<p class="muted">Open de kleppen in de juiste volgorde.</p><div class="row">'+['A','B','C','D'].map(v=>`<button onclick="valve('${v}')">KLEP ${v}</button>`).join('')+'</div><p id="valveProgress" class="muted">0 / 4</p>';
+ if(t==='circuit')html+='<p class="muted">Kies een stroomroute.</p><div class="row">'+['A','B','C','D'].map(v=>`<button onclick="choose('${t}','${v}')">ROUTE ${v}</button>`).join('')+'</div>';
+ html+='</div>';$('tasks').insertAdjacentHTML('beforeend',html);
+ });
 }
-function renderManual(){
- $('manualTasks').innerHTML=mission.types.map((t,i)=>taskCard(t,i)).join('');
+function active(t){return !ended&&!$('task-'+t).classList.contains('done')}
+function choose(t,v){if(!active(t))return;let a=answers(t,data[t]);if(t==='wires'||t==='symbols'||t==='dial'||t==='circuit')check(t,v===a)}
+function check(t,ok){
+ if(ok){solved++;$('task-'+t).classList.add('done');$('tag-'+t).textContent='✓ HERSTELD';$('tag-'+t).style.color='#61e3a5';$('progress')?.remove();log(names[t]+' hersteld.');if(solved===types.length)win()}
+ else fault(t);
 }
+function fault(t){strikes++;$('strikes').textContent=strikes+' / 3';log('Fout bij '+names[t]+'.');$('status').textContent='● FOUT GEDETECTEERD';$('status').className='red';if(strikes>=3)fail()}
+let colorPos=0,switches=[false,false,false,false,false],key='',valvePos=0;
+function colorPress(v){if(!active('colors'))return;let a=answers('colors',data.colors);if(a[colorPos]===v){colorPos++;$('colorProgress').textContent=colorPos+' / '+a.length;if(colorPos===a.length)check('colors',true)}else{colorPos=0;$('colorProgress').textContent='Verkeerd. Begin opnieuw.';fault('colors')}}
+function toggle(i){if(!active('switches'))return;switches[i]=!switches[i];$('sw'+i).textContent='S'+(i+1)+': '+(switches[i]?'AAN':'UIT');$('sw'+i).classList.toggle('on',switches[i])}
+function checkSwitches(){if(active('switches'))check('switches',JSON.stringify(switches)===JSON.stringify(answers('switches',data.switches)))}
+function keyAdd(v){if(!active('keypad')||key.length>=4)return;key+=v;display()}
+function keyClear(){key='';display()}
+function display(){$('display').textContent=(key+'____').slice(0,4).split('').join(' ')}
+function keySubmit(){if(!active('keypad'))return;if(key.length!==4)return;check('keypad',key===answers('keypad',data.keypad));key='';display()}
+function valve(v){if(!active('valves'))return;let a=answers('valves',data.valves);if(v===a[valvePos]){valvePos++;$('valveProgress').textContent=valvePos+' / 4';if(valvePos===4)check('valves',true)}else{valvePos=0;$('valveProgress').textContent='Verkeerd. Begin opnieuw.';fault('valves')}}
+function log(s){$('log').innerHTML=s+'<br>'+$('log').innerHTML}
+function tick(){if(ended)return;time--;let m=Math.floor(time/60),s=time%60;$('timer').textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');if(time<=0)fail()}
+function win(){ended=true;clearInterval(clock);$('status').textContent='✓ MISSIE GESLAAGD';$('status').className='green';log('Alle systemen zijn hersteld.')}
+function fail(){if(ended)return;ended=true;clearInterval(clock);$('status').textContent='✖ MISSIE MISLUKT';$('status').className='red';log('De missie is beëindigd.');document.querySelectorAll('button').forEach(b=>b.disabled=true)}
 </script>
 </body>
 </html>
