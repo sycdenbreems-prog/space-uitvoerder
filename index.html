@@ -1,36 +1,155 @@
-<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07111b"><title>LAST SIGNAL · Brug</title><style>*{box-sizing:border-box}body{margin:0;background:#07111b;color:#eaf3fa;font-family:Arial,sans-serif}.wrap{max-width:1120px;margin:auto;padding:14px}.hero{display:flex;justify-content:space-between;gap:12px;align-items:center;border-bottom:1px solid #28445b;padding:8px 0 16px}h1{margin:4px 0;color:#70e2ce;letter-spacing:3px;font-size:clamp(25px,5vw,38px)}h2{color:#8bd7ff;font-size:18px;margin:0 0 12px}.muted{color:#9cb1c1;font-size:13px;line-height:1.55}.panel,.module{background:#122337;border:1px solid #2c4a62;border-radius:10px;padding:15px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.module{margin:0;background:linear-gradient(145deg,#192f43,#0d1c2b);border:2px solid #35536b;min-width:0}.module.done{border-color:#39ae7b;background:#102b28}.module h3{margin:0 0 10px;color:#8be2d3;font-size:16px}.display{background:#06131b;border:1px solid #35556a;border-radius:7px;padding:12px;margin:8px 0;color:#b8f3dc;font:14px/1.6 monospace;white-space:pre-wrap}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.meta div{background:#091827;border:1px solid #29455c;border-radius:7px;padding:9px}.meta b{display:block;color:#6fe0c8;font-size:20px;margin-top:5px}button{border:1px solid #56758b;background:#29465c;color:#fff;border-radius:7px;padding:10px 12px;font-weight:bold;cursor:pointer}button:disabled{opacity:.4;cursor:not-allowed}.primary{background:#117b70;border-color:#45b7a8}.selected{outline:3px solid #f3d36c;background:#65582a}.control{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}.control button{flex:1;min-width:52px}.wireboard{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:center;background:#081722;border:1px solid #35546a;padding:12px;border-radius:8px}.terminal{display:flex;flex-direction:column;gap:7px}.terminal button{min-height:44px;text-align:left}.terminal button:before{content:'●';margin-right:10px;color:var(--c)}.wireline{font-size:12px;color:#a9bdca;text-align:center;min-height:22px}.pipegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.pipe{height:68px;font-size:28px;background:#0a1a28}.pipe span{display:block;transition:transform .1s}.lockgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px}.lockgrid button{height:55px;font-size:23px}.switchgrid,.valvegrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.switch{min-height:72px;background:#344454}.switch.on{background:#126b4c;border-color:#4ac68b}.valve{min-height:72px;background:#283e50}.valve span{display:block;font-size:24px}.valve small{display:block;font-size:10px;margin-top:5px}.bar{height:8px;background:#263d51;border-radius:8px;overflow:hidden;margin-top:10px}.bar>div{height:100%;background:#49c89b;width:0%}input{width:100%;padding:13px;background:#071522;border:1px solid #527087;border-radius:7px;color:white;font-size:18px}#timer{font: bold 30px monospace;color:#ff7777;text-align:right}.screen{display:none}.screen.active{display:block}#result{display:none;position:fixed;inset:0;background:#02070deF;align-items:center;justify-content:center;padding:20px}#result.show{display:flex}.resultbox{max-width:440px;background:#14283b;border:2px solid #52718b;border-radius:12px;padding:28px;text-align:center;width:100%}.note{background:#263d4d;padding:10px;border-radius:7px;margin-top:10px;font-size:13px;color:#c3d4df}@media(max-width:700px){.grid{grid-template-columns:1fr}.meta{grid-template-columns:repeat(2,1fr)}.wrap{padding:8px}.hero{align-items:flex-start}.pipe{height:60px}.wireboard{gap:7px;padding:8px}}
-</style></head><body>
-<section id="home" class="screen active"><div class="wrap" style="max-width:520px;padding-top:12vh;text-align:center"><h1>LAST SIGNAL</h1><p class="muted">AURORA · BRUGCONSOLE</p><div class="panel"><h2>Start de noodmissie</h2><p class="muted">Open op het andere apparaat <b>technicus.html</b>. Vul op beide apparaten exact dezelfde missiecode in. De technicus heeft het handboek; jij krijgt alleen de beschadigde systemen te zien.</p><input id="code" placeholder="Bijvoorbeeld AURORA-27" maxlength="30"><button class="primary" style="width:100%;margin-top:10px" onclick="start()">START MISSIE</button><p id="error" class="muted"></p></div></div></section>
-<section id="game" class="screen"><div class="wrap"><header class="hero"><div><h1>LAST SIGNAL</h1><div class="muted">AURORA · LIVE BRUGCONSOLE</div></div><div><div id="timer">15:00</div><div class="muted">RESTERENDE TIJD</div></div></header><div class="panel"><div class="meta"><div>MISSIE<b id="mission">—</b></div><div>BEMANNING<b id="crew">—</b></div><div>RODE LAMPEN<b id="red">—</b></div><div>FOUTEN<b id="strikes">0 / 3</b></div></div><p id="story" class="muted"></p><div class="bar"><div id="progressbar"></div></div><p id="progress" class="muted">0 / 5 systemen hersteld</p></div><div class="grid" id="modules"></div><p id="status" class="muted" style="text-align:center">Jij ziet de bemannings- en alarmgegevens. Geef die live door aan de technicus. Voer daarna diens reparatie-instructies precies uit.</p></div></section>
-<div id="result"><div class="resultbox"><h1 id="resultTitle"></h1><p id="resultText"></p><button onclick="location.reload()">NIEUWE MISSIE</button></div></div>
-<script>function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
-function rng(seed){let a=seed>>>0;return()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);return((t^(t>>>14))>>>0)/4294967296}}
-function build(code){const r=rng(hash(code.toUpperCase()+'|AURORA-VISUAL-1')),n=(a,b)=>Math.floor(r()*(b-a+1))+a,p=a=>a[Math.floor(r()*a.length)];const crew=n(4,7),red=n(1,5),batteries=n(1,4),serial=String(n(100000,999999)),indicator=r()>.5;const names=['Mara Voss','Elias Chen','Noah Vermeer','Sofia Laurent','Daan Mercer','Lina Okafor','Milo Hayes','Amira Bakker'];let roster=names.slice();for(let i=roster.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[roster[i],roster[j]]=[roster[j],roster[i]]}roster=roster.slice(0,crew);
-const colors=['ROOD','BLAUW','GROEN','GEEL','WIT'];let wireOrder=colors.slice();for(let i=wireOrder.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[wireOrder[i],wireOrder[j]]=[wireOrder[j],wireOrder[i]]}const wireTarget=(crew+red+batteries+Number(serial.at(-1))+(indicator?2:0))%5;
-const pipeShapes=Array.from({length:4},()=>n(0,2)),pipeStart=Array.from({length:4},()=>n(0,3)),pipeTarget=pipeStart.map((v,i)=>(v+crew+red+i+Number(serial[i+1]))%4);
-const lockPool=['▲','●','■','◆','✚','★'];let lockSymbols=lockPool.slice();for(let i=lockSymbols.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[lockSymbols[i],lockSymbols[j]]=[lockSymbols[j],lockSymbols[i]]}lockSymbols=lockSymbols.slice(0,5);const lockTarget=[...lockSymbols].sort((a,b)=>((lockPool.indexOf(a)+crew+red)%7)-((lockPool.indexOf(b)+crew+red)%7)).slice(0,4);
-const powerStart=Array.from({length:4},()=>r()>.5),powerTarget=powerStart.map((v,i)=>((Number(serial[i+1])+crew+red+i+(indicator?1:0))%2)===1);
-const valveStart=Array.from({length:4},()=>n(0,3)),valveTarget=valveStart.map((v,i)=>(v+red+batteries+i+(indicator?1:0))%4);
-return{code:code.toUpperCase(),crew,red,batteries,serial,indicator,roster,wireOrder,wireTarget,pipeShapes,pipeStart,pipeTarget,lockSymbols,lockTarget,powerStart,powerTarget,valveStart,valveTarget}}
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AURORA · BRUGCONSOLE</title><style>
+:root{--bg:#07111e;--panel:#101f30;--panel2:#172b40;--line:#2b4963;--cyan:#5ee7ef;--green:#61e6a4;--red:#ff6678;--text:#eaf5ff;--muted:#9db3c8;--yellow:#ffd36a}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#18334c 0,#07111e 55%);color:var(--text);font:15px/1.45 Arial,sans-serif;min-height:100vh}
+header{padding:18px 20px;border-bottom:1px solid var(--line);background:#081522eF;position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:12px}.logo{font-size:30px}.brand h1{font-size:18px;letter-spacing:2px;margin:0}.brand small{color:var(--cyan);letter-spacing:2px}
+main{max-width:1100px;margin:auto;padding:20px}.panel{background:linear-gradient(145deg,#122438,#0c1a29);border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 16px;box-shadow:0 10px 28px #0004}
+h2{font-size:19px;margin:0 0 12px;color:var(--cyan)}h3{margin:0 0 10px;font-size:16px}p{color:#c6d7e6}.muted,small{color:var(--muted)}small{display:block;font-size:12px}
+input,button{font:inherit}input{background:#071522;border:1px solid #3a5b76;color:white;padding:12px;border-radius:8px;min-width:0}
+button{background:#1a3851;color:var(--text);border:1px solid #42637e;border-radius:9px;padding:11px 13px;cursor:pointer;font-weight:bold}
+button:hover{border-color:var(--cyan);background:#244a65}button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:#087b91;border-color:#26c9d7}.danger{color:var(--red)}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:9px}
+.stat{background:#091725;border:1px solid var(--line);padding:10px;border-radius:10px}.stat b{display:block;font-size:20px;color:var(--cyan)}.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.story{border-left:4px solid var(--yellow);padding:10px 14px;background:#241f183d;border-radius:7px;color:#f4e4c5}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.task{background:#0a1927;border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0}.taskhead{display:flex;align-items:center;gap:12px;margin-bottom:12px}.bigicon{font-size:32px;background:#18334a;border-radius:10px;width:52px;height:52px;display:grid;place-items:center}.taskhead small{margin-top:2px}
+.tiles{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.tile{background:#142b40;border:1px solid #34536e;border-radius:9px;padding:10px;min-width:58px;text-align:center}.tile small{margin-top:3px}.tile.active{outline:2px solid var(--cyan);background:#164b5b}.tile.good{border-color:var(--green);background:#123b35}.tile.bad{border-color:var(--red)}
+.diagram{background:#071522;border:1px dashed #41617b;border-radius:10px;padding:12px;margin:10px 0}.flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap}.node{padding:9px 12px;border-radius:8px;background:#1a3851;border:1px solid #41617b;text-align:center}.arrow{color:var(--cyan);font-size:20px}
+.rowline{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}.rowline label{color:var(--muted);min-width:90px}.choice{min-width:65px}.progress{height:8px;background:#25394d;border-radius:20px;overflow:hidden}.progress>i{display:block;height:100%;background:var(--green);width:0}
+.notice{padding:10px;border-radius:8px;background:#122b3c;color:#bdeaf2;margin:10px 0}.error{color:var(--red);font-weight:bold}.success{color:var(--green);font-weight:bold}.hidden{display:none!important}
+.setup{max-width:500px;margin:50px auto}.setup input{width:100%;margin:8px 0}.footer{color:#7892a9;font-size:12px;text-align:center;padding:20px}
+@media(max-width:600px){main{padding:12px}header{padding:14px}.brand h1{font-size:15px}}
+</style></head><body><header><div class="brand"><span class="logo">🚀</span><div><h1>MISSION: LAST SIGNAL</h1><small>UITVOERDER · LIVE REPARATIEPANEEL</small></div></div></header><main>
+<div id="setup" class="panel setup"><h2>🛰 MISSIE STARTEN</h2><p>Voer dezelfde missiecode in als de technicus.</p><input id="missionCode" placeholder="Bijv. AURORA-742" maxlength="24"><button class="primary" onclick="start()">START MISSIE →</button><p id="setupError" class="error"></p><small>Offline · Geen server · Spreek de informatie hardop door aan de technicus.</small></div>
+<div id="game" class="hidden">
+ <section class="panel"><h2 id="missionTitle">MISSIE</h2><div id="story" class="story"></div></section>
+ <section class="panel"><h2>🧑‍🚀 BRUGSTATUS — ALLEEN UITVOERDER</h2><div class="stats">
+ <div class="stat"><b id="taskCount">—</b><span>Willekeurige opdrachten</span></div><div class="stat"><b id="crewNames">—</b><span>Bemanning aan boord</span></div><div class="stat"><b id="crewLamp">—</b><span>Rode alarmlichten</span></div><div class="stat"><b id="serial">—</b><span>Serienummer</span></div><div class="stat"><b id="batteries">—</b><span>Reserveaccu's</span></div><div class="stat"><b id="indicator">—</b><span>Statusindicator</span></div>
+ </div><p class="notice">📡 Geef <b>bemanningsaantal</b> en <b>aantal rode alarmlichten</b> door aan de technicus. Die informatie staat niet op diens scherm.</p></section>
+ <section class="panel"><h2>🛠 REPARATIESTATUS</h2><div class="progress"><i id="progressBar"></i></div><p id="progressText">0 systemen hersteld</p><p>❌ Fouten: <b id="strikeCount">0 / 3</b></p><div id="feedback" class="notice">Wacht op instructies van de technicus.</div></section>
+ <div id="tasks"></div>
+</div><div class="footer">AURORA SPACE SYSTEMS · NOODPROTOCOL LS-09 · OFFLINE CO-OP</div></main><script>
+const $ = id => document.getElementById(id);
+const NAMES = ["Mara Voss","Ilan Chen","Noor Bakker","Tomas Reed","Asha Malik","Finn de Wit","Elio Park","Sana Idris"];
+const COLORS = ["🔴 Rood","🔵 Blauw","🟡 Geel","🟢 Groen","🟣 Paars"];
+const GLYPHS = ["▲","●","■","◆","✚","★"];
+const DIRS = ["↑ NOORD","→ OOST","↓ ZUID","← WEST"];
+function hashCode(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+function rng(seed){let a=seed>>>0;return ()=>{a+=0x6D2B79F5;let t=a;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return ((t^t>>>14)>>>0)/4294967296}}
+function shuffle(a,r){a=[...a];for(let i=a.length-1;i>0;i--){let j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function makeMission(code){
+ const seed=hashCode(code.toUpperCase()+"|AURORA-LIVE-VISUAL-4");
+ const r=rng(seed);
+ const crew=4+Math.floor(r()*4), red=2+Math.floor(r()*4);
+ const roster=shuffle(NAMES,r).slice(0,crew);
+ const serial=String(Math.floor(r()*900000)+100000);
+ const batteries=1+Math.floor(r()*5), indicator=r()>.5;
+ const all=["wires","switches","lock","dials","pipes","sequence"];
+ const count=4+Math.floor(r()*3);
+ const selected=shuffle(all,r).slice(0,count);
+ const tasks={};
+ for(const type of selected){
+   if(type==="wires"){
+     const wireNames=shuffle(COLORS,r);
+     const ports=shuffle(["A","B","C","D","E"],r);
+     const offset=(crew+red+batteries+Number(serial.at(-1)))%5;
+     const perm=shuffle([0,1,2,3,4],r).map(x=>(x+offset)%5);
+     tasks.wires={wireNames,ports,answer:perm};
+   }
+   if(type==="switches"){
+     const start=Array.from({length:5},()=>r()>.5);
+     const answer=start.map((v,i)=>((Number(v)+crew+red+i+batteries+(indicator?1:0))%2)===1);
+     tasks.switches={start,answer};
+   }
+   if(type==="lock"){
+     const buttons=shuffle(GLYPHS,r);
+     const answer=Array.from({length:4},()=>buttons[Math.floor(r()*buttons.length)]);
+     const shift=(crew+red+batteries)%buttons.length;
+     tasks.lock={buttons,answer:answer.map((s,i)=>buttons[(buttons.indexOf(s)+shift+i)%buttons.length])};
+   }
+   if(type==="dials"){
+     const start=Array.from({length:4},()=>Math.floor(r()*4));
+     const answer=start.map((v,i)=>(v+crew+red+batteries+i+(indicator?1:0))%4);
+     tasks.dials={start,answer};
+   }
+   if(type==="pipes"){
+     const start=Array.from({length:4},()=>Math.floor(r()*4));
+     const answer=start.map((v,i)=>(v+crew+red+Number(serial[i+1])+i)%4);
+     tasks.pipes={start,answer};
+   }
+   if(type==="sequence"){
+     const buttons=shuffle(GLYPHS,r).slice(0,5);
+     const base=shuffle(buttons,r).slice(0,4); const shift=(crew+red+batteries)%base.length; const answer=base.map((_,i)=>base[(i+shift)%base.length]);
+     tasks.sequence={buttons,answer};
+   }
+ }
+ return {code:code.toUpperCase(),crew,red,roster,serial,batteries,indicator,selected,tasks};
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function iconTitle(icon,title,sub=""){return `<div class="taskhead"><span class="bigicon">${icon}</span><div><b>${title}</b><small>${sub}</small></div></div>`}
+function tile(label,sub="",cls=""){return `<div class="tile ${cls}"><b>${label}</b>${sub?`<small>${sub}</small>`:""}</div>`}
 
-let g,solved=new Set(),strikes=0,seconds=900,timer,wireFrom=null,wireLinks={},pipes=[],locks=[],powers=[],valves=[];
-const $=id=>document.getElementById(id);function show(id){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(id).classList.add('active')}
-function start(){let c=$('code').value.trim();if(c.length<3){$('error').textContent='Gebruik minimaal 3 tekens.';return}g=build(c);pipes=[...g.pipeStart];locks=[];powers=[...g.powerStart];valves=[...g.valveStart];wireLinks={};wireFrom=null;solved.clear();strikes=0;seconds=900;$('mission').textContent=g.code;$('crew').textContent=g.crew;$('red').textContent=g.red;$('strikes').textContent='0 / 3';$('story').textContent=`LIVE · 03:17 UTC — De AURORA trilt hevig. De hoofdenergie valt telkens weg en de levensondersteuning staat onder druk. ${g.crew} bemanningsleden zijn momenteel aan boord. ${g.red} rode alarmlichten knipperen op de brug. De reactor blijft draaien, maar de koeling hapert. Serienummer ${g.serial} · ${g.batteries} reservebatterijen · indicator ${g.indicator?'AAN':'UIT'}. Aanwezige bemanning: ${g.roster.join(', ')}. De technicus heeft jouw bemannings- en alarmgegevens nodig om de reparaties te berekenen.`;render();show('game');tick();timer=setInterval(()=>{if(--seconds<=0){tick();end(false,'De noodenergie is uitgeput. De missie is mislukt.')}else tick()},1000)}
-function tick(){$('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')}
-function card(id,title,html){return `<article class="module" id="m-${id}"><h3>${title}</h3>${html}</article>`}
-function render(){let html='';html+=card('wire','01 · KABELKOPPELING',`<p class="muted">Verbind elke kabel met een aansluitpoort. Selecteer links een kabel en daarna rechts een poort.</p><div class="wireboard"><div class="terminal">${g.wireOrder.map((c,i)=>`<button style="--c:${['#ed5555','#4da9ed','#58c98b','#edc84e','#e5e9ed'][['ROOD','BLAUW','GROEN','GEEL','WIT'].indexOf(c)]}" class="${wireFrom===i?'selected':''}" onclick="pickWire(${i})">${c} · KABEL ${i+1}</button>`).join('')}</div><div class="terminal">${['A','B','C','D','E'].map((x,i)=>`<button onclick="connectWire(${i})">POORT ${x} ${wireLinks[i]!==undefined?'← KABEL '+(wireLinks[i]+1):''}</button>`).join('')}</div></div><div class="wireline">${Object.keys(wireLinks).length}/5 verbindingen · ${Object.entries(wireLinks).map(([port,cable])=>'K'+(cable+1)+' → '+String.fromCharCode(65+Number(port))).join(' · ')}</div><button class="primary" style="width:100%;margin-top:8px" onclick="checkWires()">TEST KABELBUNDEL</button>`);
-html+=card('pipes','02 · KOELLEIDING HERSTELLEN',`<p class="muted">Draai ieder leidingsegment. De technicus vertelt welke stand elk segment moet krijgen.</p><div class="pipegrid">${pipes.map((v,i)=>`<button class="pipe" onclick="turnPipe(${i})"><span style="transform:rotate(${v*90}deg)">${['│','└','┬'][g.pipeShapes[i]]}</span><small style="font-size:10px">SEGMENT ${i+1} · ${v*90}°</small></button>`).join('')}</div><button class="primary" style="width:100%;margin-top:8px" onclick="checkPipes()">TEST KOELCIRCUIT</button>`);
-html+=card('lock','03 · LUCHTSLUIS',`<p class="muted">Het mechanische slot heeft vijf druktoetsen. Voer de door de technicus bepaalde reeks in.</p><div class="lockgrid">${g.lockSymbols.map((s,i)=>`<button onclick="pressLock('${s}')">${s}</button>`).join('')}</div><div class="display" id="lockDisplay">INGEVOERD: ${locks.join(' ')||'—'}</div><button onclick="resetLock()">RESET SLOT</button> <button class="primary" onclick="checkLock()">ONTGRENDEL</button>`);
-html+=card('power','04 · HOOFDSTROOM',`<p class="muted">Zet de vier stroomschakelaars in de juiste stand om de hoofdverdeler te stabiliseren.</p><div class="switchgrid">${powers.map((v,i)=>`<button class="switch ${v?'on':''}" onclick="togglePower(${i})">SCHAKELAAR ${i+1}<br><b>${v?'AAN':'UIT'}</b></button>`).join('')}</div><button class="primary" style="width:100%;margin-top:8px" onclick="checkPower()">ACTIVEER VERDELER</button>`);
-html+=card('valves','05 · DRUKREGELAARS',`<p class="muted">Draai de vier drukregelaars naar de juiste stand. Elke klik draait één kwartslag.</p><div class="valvegrid">${valves.map((v,i)=>`<button class="valve" onclick="turnValve(${i})"><span>◉</span>REGELAAR ${i+1}<small>${['NOORD','OOST','ZUID','WEST'][v]}</small></button>`).join('')}</div><button class="primary" style="width:100%;margin-top:8px" onclick="checkValves()">STABILISEER DRUK</button>`);
-$('modules').innerHTML=html;updateProgress()}
-function refresh(){render()}
-function pickWire(i){wireFrom=i;refresh()}function connectWire(port){if(wireFrom===null){$('status').textContent='Selecteer eerst een kabel.';return}wireLinks[port]=wireFrom;wireFrom=null;refresh()}
-function checkWires(){let ok=Object.keys(wireLinks).length===5&&Array.from({length:5},(_,i)=>wireLinks[i]===((i+g.wireTarget)%5)).every(Boolean);check('wire',ok,'De kabelbundel is correct aangesloten.','Verkeerde aansluiting. De kabelbundel geeft kortsluiting.')}
-function turnPipe(i){pipes[i]=(pipes[i]+1)%4;refresh()}function checkPipes(){check('pipes',pipes.every((v,i)=>v===g.pipeTarget[i]),'Koelmiddel stroomt weer door de leiding.','De leidingdelen staan verkeerd. De druk valt weg.')}
-function pressLock(s){if(locks.length<4)locks.push(s);$('lockDisplay').textContent='INGEVOERD: '+locks.join(' ')}function resetLock(){locks=[];$('lockDisplay').textContent='INGEVOERD: —'}function checkLock(){check('lock',locks.join('|')===g.lockTarget.join('|'),'De luchtsluis is ontgrendeld.','Verkeerde sluitvolgorde. Het slot blokkeert tijdelijk.');if(solved.has('lock'))locks=[]}
-function togglePower(i){powers[i]=!powers[i];refresh()}function checkPower(){check('power',powers.every((v,i)=>v===g.powerTarget[i]),'De hoofdverdeler levert weer stabiele stroom.','De stroomverdeling klopt niet. Een circuit is overbelast.')}
-function turnValve(i){valves[i]=(valves[i]+1)%4;refresh()}function checkValves(){check('valves',valves.every((v,i)=>v===g.valveTarget[i]),'De cabinedruk is stabiel.','De drukregelaars staan verkeerd. De cabine blijft lekken.')}
-function check(id,ok,good,bad){if(solved.has(id))return;if(ok){solved.add(id);$('status').textContent=good;$('m-'+id).classList.add('done');updateProgress();if(solved.size===5)end(true,'Alle systemen zijn hersteld. De AURORA heeft opnieuw contact met de aarde.')}else{strikes++;$('strikes').textContent=strikes+' / 3';$('status').textContent=bad+' Fout '+strikes+' van 3.';if(strikes>=3)end(false,'Drie fouten. De noodcomputer heeft de missie afgebroken.')}}
-function updateProgress(){$('progress').textContent=solved.size+' / 5 systemen hersteld';$('progressbar').style.width=(solved.size/5*100)+'%'}function end(ok,msg){if(window.done)return;window.done=true;clearInterval(timer);$('resultTitle').textContent=ok?'MISSIE VOLTOOID':'MISSIE MISLUKT';$('resultText').textContent=msg;$('result').classList.add('show')}
+let game=null,solved=new Set(),strikes=0,selectedWire=null,wireLinks={},lockClicks={},dialState={},pipeState={},seqClicks=[];
+function start(){
+ const code=$("missionCode").value.trim();if(code.length<3){$("setupError").textContent="Vul minimaal 3 tekens in.";return}
+ game=makeMission(code);solved.clear();strikes=0;
+ $("setup").classList.add("hidden");$("game").classList.remove("hidden");
+ $("missionTitle").textContent="MISSIE "+game.code;
+ $("story").innerHTML=`<b>LIVE · 03:17 UTC</b><br>De AURORA schudt door een plotselinge energiestoot. De reactor zakt weg. De cabinedruk daalt. Op de brug knipperen alarmen. Er zijn <b>${game.crew} bemanningsleden</b> aan boord en <b>${game.red} rode alarmlichten</b> branden. De bemanning wacht op jouw herstelacties. Geef deze twee gegevens direct door aan de technicus.`;
+ $("crewNames").textContent=game.crew+" · "+game.roster.join(" · ");$("crewLamp").textContent=game.red;
+ $("serial").textContent=game.serial;$("batteries").textContent=game.batteries;$("indicator").textContent=game.indicator?"AAN":"UIT";
+ $("taskCount").textContent=game.selected.length;$("strikeCount").textContent="0 / 3";
+ renderTasks();updateProgress();
+}
+function fail(msg){strikes++;$("strikeCount").textContent=strikes+" / 3";$("feedback").innerHTML=`<span class="error">⚠ ${msg} · Fout ${strikes}/3</span>`;if(strikes>=3){$("feedback").innerHTML+='<p class="error">☠ MISSIE MISLUKT — de AURORA verliest haar noodstroom.</p>';document.querySelectorAll(".task button").forEach(b=>b.disabled=true)}}
+function win(id){if(solved.has(id))return;solved.add(id);$("feedback").innerHTML='<span class="success">✓ Systeem hersteld. Ga door naar de volgende opdracht.</span>';updateProgress()}
+function updateProgress(){let n=solved.size,total=game.selected.length;$("progressText").textContent=n+" / "+total+" systemen hersteld";$("progressBar").style.width=(n/total*100)+"%";if(n===total&&strikes<3)$("feedback").innerHTML='<span class="success">🚀 ALLE SYSTEMEN HERSTELD — AURORA IS STABIEL!</span>'}
+function renderTasks(){
+ const host=$("tasks");host.innerHTML="";
+ game.selected.forEach((type,index)=>{const d=game.tasks[type];let html=`<section class="task" id="task-${type}"><div class="rowline"><span class="muted">SYSTEEM ${String(index+1).padStart(2,"0")}</span><span class="tile">${type.toUpperCase()}</span></div>`;
+ if(type==="wires"){
+ html+=iconTitle("🔌","Kabelverdeler","Verbind elke kabel met één uitgang.");
+ html+=`<div class="diagram"><div class="flow"><span class="node">⚡ INVOER</span><span class="arrow">→</span><span class="node">VERDEELBLOK</span></div></div><div class="grid"><div><b>Kabels</b><div class="tiles">${d.wireNames.map((x,i)=>`<button class="choice" id="wire-${i}" onclick="pickWire(${i})">${x}</button>`).join("")}</div></div><div><b>Uitgangen</b><div class="tiles">${d.ports.map((x,i)=>`<button class="choice" onclick="pickPort(${i})">⚙ ${x}</button>`).join("")}</div></div></div><p class="muted" id="wireStatus">Selecteer een kabel en daarna een uitgang.</p><button onclick="checkWires()">✓ CONTROLEER VERBINDINGEN</button>`;
+ }
+ if(type==="switches"){
+ html+=iconTitle("⚡","Stroomverdeling","Zet elke schakelaar in de juiste stand.");
+ html+=`<div class="diagram"><div class="flow"><span class="node">🔋 ACCU</span><span class="arrow">→</span><span class="node">⚡ BUS</span><span class="arrow">→</span><span class="node">🛰 SYSTEMEN</span></div></div><div class="tiles">${d.start.map((v,i)=>`<button id="sw-${i}" onclick="this.dataset.on=this.dataset.on==='1'?'0':'1';this.textContent='S'+( ${i+1} )+' · '+(this.dataset.on==='1'?'🟢 AAN':'⚫ UIT')">S${i+1} · ${v?'🟢 AAN':'⚫ UIT'}</button>`).join("")}</div><button onclick="checkSwitches()">✓ CONTROLEER STROOM</button>`;
+ }
+ if(type==="lock"){
+ html+=iconTitle("🔐","Luchtsluis","Voer de symboolreeks in op het slot.");
+ html+=`<div class="diagram"><div class="flow"><span class="node">🚪 BUITENLUCHT</span><span class="arrow">→</span><span class="node">🔒 SLOT</span><span class="arrow">→</span><span class="node">🧑‍🚀 CABINE</span></div></div><div class="tiles" id="lockDisplay">${Array.from({length:4},(_,i)=>`<div class="tile" id="lockslot-${i}">＿</div>`).join("")}</div><div class="tiles">${d.buttons.map(s=>`<button class="choice" onclick="lockPick('${s}')">${s}</button>`).join("")}</div><button onclick="resetLock()">↺ WIS</button><button onclick="checkLock()">✓ OPEN SLOT</button>`;
+ }
+ if(type==="dials"){
+ html+=iconTitle("🧭","Richtingsregelaars","Draai elke regelaar naar de juiste richting.");
+ html+=`<div class="grid">${d.start.map((v,i)=>`<div class="tile"><b>REGELAAR ${i+1}</b><div style="font-size:30px" id="dial-${i}">${["↑","→","↓","←"][v]}</div><small id="dialLabel-${i}">${DIRS[v]}</small><button onclick="turnDial(${i})">↻ DRAAI</button></div>`).join("")}</div><button onclick="checkDials()">✓ VERGRENDEL RICHTING</button>`;
+ }
+ if(type==="pipes"){
+ html+=iconTitle("🧊","Koelcircuit","Draai de leidingsegmenten zodat ze de juiste richting aanwijzen.");
+ html+=`<div class="diagram"><div class="flow"><span class="node">❄ REACTOR</span>${d.start.map((v,i)=>`<button id="pipe-${i}" onclick="turnPipe(${i})" style="font-size:24px">${["↑","→","↓","←"][v]}</button>`).join('<span class="arrow">→</span>')}<span class="node">🌡 RADIATOR</span></div></div><p class="muted">Elk segment draait 90° per tik.</p><button onclick="checkPipes()">✓ TEST KOELSTROOM</button>`;
+ }
+ if(type==="sequence"){
+ html+=iconTitle("🧬","Noodoverride","Activeer de symbolen in de juiste volgorde.");
+ html+=`<div class="diagram"><b>OVERRIDE-PANEEL</b><div class="tiles" id="seqDisplay">${Array.from({length:4},(_,i)=>`<div class="tile" id="seqslot-${i}">＿</div>`).join("")}</div></div><div class="tiles">${d.buttons.map(s=>`<button class="choice" onclick="seqPick('${s}')">${s}</button>`).join("")}</div><button onclick="resetSeq()">↺ WIS</button><button onclick="checkSeq()">✓ ACTIVEER</button>`;
+ }
+ html+=`<p class="muted" id="state-${type}">🟡 WACHT OP REPARATIE</p></section>`;
+ host.insertAdjacentHTML("beforeend",html);
+ if(type==="switches")d.start.forEach((v,i)=>{let b=$("sw-"+i);b.dataset.on=v?"1":"0"});
+ if(type==="dials")d.start.forEach((v,i)=>dialState[i]=v);
+ if(type==="pipes")d.start.forEach((v,i)=>pipeState[i]=v);
+ });
+}
+function pickWire(i){selectedWire=i;document.querySelectorAll('[id^="wire-"]').forEach(b=>b.classList.remove("active"));$("wire-"+i).classList.add("active")}
+function pickPort(i){if(selectedWire===null){$("wireStatus").textContent="Kies eerst een kabel.";return}wireLinks[selectedWire]=i;$("wireStatus").textContent="Kabel "+(selectedWire+1)+" gekoppeld aan uitgang "+game.tasks.wires.ports[i];$("wire-"+selectedWire).classList.add("good");selectedWire=null}
+function checkWires(){let d=game.tasks.wires;if(d.wireNames.some((_,i)=>wireLinks[i]===undefined)||new Set(Object.values(wireLinks)).size!==5){fail("Niet alle kabels zijn uniek aangesloten");return}if(d.answer.every((v,i)=>wireLinks[i]===v)){win("wires");$("state-wires").textContent="🟢 KABELNETWERK HERSTELD"}else fail("Kabelroute onjuist")}
+function checkSwitches(){let d=game.tasks.switches;let ok=d.answer.every((v,i)=>($("sw-"+i).dataset.on==="1")===v);if(ok){win("switches");$("state-switches").textContent="🟢 STROOM VERDEELD"}else fail("Schakelaarstand onjuist")}
+function lockPick(s){let a=lockClicks[Object.keys(lockClicks).length]??null;let n=Object.keys(lockClicks).length;if(n>=4)return;lockClicks[n]=s;$("lockslot-"+n).textContent=s}
+function resetLock(){lockClicks={};for(let i=0;i<4;i++)$("lockslot-"+i).textContent="＿"}
+function checkLock(){let a=Object.values(lockClicks);if(a.length!==4){fail("Vul eerst vier symbolen in");return}if(a.join("|")===game.tasks.lock.answer.join("|")){win("lock");$("state-lock").textContent="🟢 LUCHTSLUIS OPEN"}else fail("Verkeerde slotcode")}
+function turnDial(i){dialState[i]=(dialState[i]+1)%4;$("dial-"+i).textContent=["↑","→","↓","←"][dialState[i]];$("dialLabel-"+i).textContent=DIRS[dialState[i]]}
+function checkDials(){if(game.tasks.dials.answer.every((v,i)=>dialState[i]===v)){win("dials");$("state-dials").textContent="🟢 NAVIGATIE UITGELIJND"}else fail("Richtingen kloppen niet")}
+function turnPipe(i){pipeState[i]=(pipeState[i]+1)%4;$("pipe-"+i).textContent=["↑","→","↓","←"][pipeState[i]]}
+function checkPipes(){if(game.tasks.pipes.answer.every((v,i)=>pipeState[i]===v)){win("pipes");$("state-pipes").textContent="🟢 KOELCIRCUIT DOORSTROOMD"}else fail("Koelleiding staat verkeerd")}
+function seqPick(s){if(seqClicks.length>=4)return;seqClicks.push(s);$("seqslot-"+(seqClicks.length-1)).textContent=s}
+function resetSeq(){seqClicks=[];for(let i=0;i<4;i++)$("seqslot-"+i).textContent="＿"}
+function checkSeq(){if(seqClicks.length!==4){fail("Selecteer vier symbolen");return}if(seqClicks.join("|")===game.tasks.sequence.answer.join("|")){win("sequence");$("state-sequence").textContent="🟢 OVERRIDE GEACCEPTEERD"}else fail("Verkeerde override-volgorde")}
 </script></body></html>
