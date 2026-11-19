@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MISSION: LAST SIGNAL - Uitvoerder</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#07111e;color:#e7eff9;font-family:Arial,sans-serif;min-height:100vh;display:grid;place-items:center;padding:20px}
+main{width:100%;max-width:500px}
+h1{color:#55d6be;letter-spacing:2px;font-size:25px}
+.panel{background:#111f32;border:1px solid #29415e;border-radius:12px;padding:22px;margin-top:18px}
+input,button{width:100%;padding:15px;font-size:17px;border-radius:7px}
+input{background:#071321;border:1px solid #49617d;color:white;margin:12px 0}
+button{background:#087e75;color:white;font-weight:bold;border:0;cursor:pointer}
+button:hover{background:#0b9b8e}
+.small{color:#9eb0c7;font-size:13px}
+#commandArea{display:none}
+#result{min-height:24px;margin-top:15px;font-weight:bold}
+#progress{color:#55d6be;font-size:14px}
+</style>
+</head>
+<body>
+<main>
+<h1>MISSION: LAST SIGNAL</h1>
+<p class="small">AURORA · OPERATIONELE TERMINAL</p>
+
+<section class="panel" id="setup">
+<h2>Verbinding instellen</h2>
+<p>Voer de missiecode in die je van de technicus hebt gekregen.</p>
+<input id="missionCode" placeholder="Missiecode">
+<button onclick="startMission()">VERBINDEN</button>
+<p id="setupMessage" class="small"></p>
+</section>
+
+<section class="panel" id="commandArea">
+<p class="small">OPERATIONELE TERMINAL · VERBINDING ACTIEF</p>
+<h2>Commando invoeren</h2>
+<p id="progress">Systemen: 0 / 10</p>
+<input id="commandInput" autocomplete="off" spellcheck="false" placeholder="Voer commando in...">
+<button onclick="submitCommand()">VERZENDEN</button>
+<p id="result" aria-live="polite"></p>
+<p id="mistakes" class="small">Fouten: 0 / 3</p>
+</section>
+</main>
+
+<script>
+function hashCode(str){
+ let h=2166136261;
+ for(let i=0;i<str.length;i++){
+  h^=str.charCodeAt(i);
+  h=Math.imul(h,16777619);
+ }
+ return h>>>0;
+}
+function randomGenerator(seed){
+ let a=seed>>>0;
+ return function(){
+  a+=0x6D2B79F5;
+  let t=a;
+  t=Math.imul(t^(t>>>15),t|1);
+  t^=t+Math.imul(t^(t>>>7),t|61);
+  return ((t^(t>>>14))>>>0)/4294967296;
+ };
+}
+function makeMission(code){
+ const rand=randomGenerator(hashCode(code.trim().toUpperCase()+"|LASTSIGNAL5"));
+ const pick=a=>a[Math.floor(rand()*a.length)];
+ const int=(min,max)=>Math.floor(rand()*(max-min+1))+min;
+ const crewNames=["Mara Voss","Elias Chen","Noah Vermeer","Sofia Laurent","Daan Mercer","Lina Okafor","Milo Hayes","Amira Bakker"];
+ const crewCount=int(4,7);
+ const crew=crewNames.slice().sort(()=>rand()-.5).slice(0,crewCount);
+ const redLights=int(2,5);
+ const taskCount=10;
+ const digits=(code.toUpperCase().match(/\d/g)||[]).map(Number);
+ const digitSum=digits.reduce((a,b)=>a+b,0);
+ const seedValue=(digitSum+redLights+crewCount+taskCount);
+ const powerA=1+(seedValue%4);
+ const powerB=1+((seedValue+2)%4);
+ const powerC=1+((seedValue+1)%4);
+ const oxygen=70+crewCount*3+redLights;
+ const valve=String.fromCharCode(65+((redLights+crewCount)%5));
+ const reactor=100+(redLights*crewCount)+(digitSum%50);
+ const x=12+(digitSum%37);
+ const y=20+((digitSum+crewCount*3)%41);
+ const frequency=118000+((digitSum*17+crewCount*11)%900);
+ const batteryA=1+(redLights%4);
+ const batteryB=1+((crewCount+1)%4);
+ const authorized=crew[0];
+ const pin=String((digitSum*7+crewCount*13+redLights*5)%9000+1000);
+ const secretWords=["ORION","NOVA","ATLAS","VEGA","LYRA","SOLAR"];
+ const secret=pick(secretWords);
+ const shift=1+(redLights%4);
+ const encoded=secret.split("").map(c=>String.fromCharCode(65+((c.charCodeAt(0)-65+shift)%26))).join("");
+ const finalNumber=(oxygen+reactor+x+y+frequency%1000+batteryA*10+batteryB+Number(pin))%10000;
+ const finalCode=String(finalNumber).padStart(4,"0");
+
+ return [
+  `POWER GRID ${powerA}-${powerB}-${powerC}`,
+  `OXYGEN ${oxygen}%`,
+  `VALVE OPEN ${valve}`,
+  `REACTOR START ${reactor}`,
+  `NAV SET ${x} ${y}`,
+  `COMMS FREQ ${frequency}`,
+  `BATTERY LINK ${batteryA}-${batteryB}`,
+  `AUTH ${authorized.toUpperCase()} ${pin}`,
+  `DECODE ${secret}`,
+  `FINAL RELEASE ${finalCode}`
+ ];
+}
+
+let answers=[];
+let current=0;
+let mistakes=0;
+let finished=false;
+
+function startMission(){
+ const code=document.getElementById("missionCode").value.trim();
+ const message=document.getElementById("setupMessage");
+ if(code.length<3){
+  message.textContent="Ongeldige missiecode.";
+  return;
+ }
+ answers=makeMission(code);
+ current=0;
+ mistakes=0;
+ finished=false;
+ document.getElementById("setup").style.display="none";
+ document.getElementById("commandArea").style.display="block";
+ updateStatus();
+ document.getElementById("commandInput").focus();
+}
+function updateStatus(){
+ document.getElementById("progress").textContent="Systemen: "+current+" / 10";
+ document.getElementById("mistakes").textContent="Fouten: "+mistakes+" / 3";
+}
+function submitCommand(){
+ if(finished)return;
+ const field=document.getElementById("commandInput");
+ const entered=field.value.trim().replace(/\s+/g," ").toUpperCase();
+ const result=document.getElementById("result");
+ if(!entered){
+  result.textContent="Voer een commando in.";
+  result.style.color="#ffca70";
+  return;
+ }
+ if(entered===answers[current].toUpperCase()){
+  current++;
+  field.value="";
+  result.style.color="#55d6be";
+  if(current===10){
+   finished=true;
+   result.textContent="MISSIE VOLTOOID · ALLE SYSTEMEN HERSTELD";
+   document.getElementById("progress").textContent="Systemen: 10 / 10";
+   field.disabled=true;
+   return;
+  }
+  result.textContent="COMMando geaccepteerd · Systeem bevestigd.";
+ }else{
+  mistakes++;
+  field.value="";
+  result.style.color="#ff7777";
+  if(mistakes>=3){
+   finished=true;
+   result.textContent="MISSIE MISLUKT · MAXIMAAL AANTAL FOUTEN BEREIKT";
+   field.disabled=true;
+   document.querySelector("#commandArea button").disabled=true;
+   return;
+  }
+  result.textContent="COMMando afgewezen · Controleer je invoer.";
+ }
+ updateStatus();
+ field.focus();
+}
+document.getElementById("commandInput").addEventListener("keydown",function(e){
+ if(e.key==="Enter")submitCommand();
+});
+</script>
+</body>
+</html>
